@@ -1,0 +1,254 @@
+<!doctype html>
+<!-- Nishant Kumar Rai_20190020 MNNIT Allahabad -->
+
+<?php
+
+$servername = "localhost";
+
+$username="root";
+
+$password="";
+
+$dbname="detailsmanager";
+
+$Id="";
+
+$Detail="";
+
+
+ 
+
+mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+
+ 
+
+//mysql Database connection
+
+try{
+
+$conn =mysqli_connect($servername,$username,$password,$dbname);
+
+}catch(MySQLi_Sql_Exception $ex){
+
+echo("Connection to details manager server failed...");
+
+}
+
+//Extract data from the form
+
+function getData()
+
+{
+
+$data = array();
+
+$data[0]=$_POST['Id'];
+
+$data[1]=$_POST['Detail'];
+
+return $data;
+
+}
+
+//Searching
+
+if(isset($_POST['search']))
+
+{
+
+$info = getData();
+
+$search_query="SELECT * FROM detailsmanager WHERE Id = '$info[0]'";
+
+$search_result=mysqli_query($conn, $search_query);
+
+if($search_result)
+
+{
+
+if(mysqli_num_rows($search_result))
+
+{
+
+while($rows = mysqli_fetch_array($search_result))
+
+{
+
+$Id = $rows['Id'];
+
+$Detail = $rows['Detail'];
+
+ 
+
+}
+
+}else{
+
+echo("Data not found");
+
+}
+
+} else{
+
+echo("result error");
+
+}
+
+ 
+
+}
+
+//Insertion
+
+if(isset($_POST['insert'])){
+
+$info = getData();
+
+$insert_query="INSERT INTO `detailsmanager`(`Detail`) VALUES ('$info[1]')";
+
+try{
+
+$insert_result=mysqli_query($conn, $insert_query);
+
+if($insert_result)
+
+{
+
+if(mysqli_affected_rows($conn)>0){
+
+echo("Data into DetailsManager is Inserted Successfully");
+
+ 
+
+}else{
+
+echo("Data not inserted");
+
+}
+
+}
+
+}catch(Exception $ex){
+
+echo("Error occured while insertion: ".$ex->getMessage());
+
+}
+
+}
+
+//Deleting Details
+
+if(isset($_POST['delete'])){
+
+$info = getData();
+
+$delete_query = "DELETE FROM `detailsmanager` WHERE Id = '$info[0]'";
+
+try{
+
+$delete_result = mysqli_query($conn, $delete_query);
+
+if($delete_result){
+
+if(mysqli_affected_rows($conn)>0)
+
+{
+
+echo("Details deleted successfully");
+
+}else{
+
+echo("Details not deleted");
+
+}
+
+}
+
+}catch(Exception $ex){
+
+echo("Error while deletion: ".$ex->getMessage());
+
+}
+
+}
+
+//Editing details
+
+if(isset($_POST['update'])){
+
+$info = getData();
+
+$update_query="UPDATE `detailsmanager` SET `Detail`='$info[1]' WHERE Id = '$info[0]'";
+
+try{
+
+$update_result=mysqli_query($conn, $update_query);
+
+if($update_result){
+
+if(mysqli_affected_rows($conn)>0){
+
+echo("Details Updated");
+
+}else{
+
+echo("Details could not be Updated");
+
+}
+
+}
+
+}catch(Exception $ex){
+
+echo("An error occured while updation: ".$ex->getMessage());
+
+}
+
+}
+
+ 
+
+?>
+
+<html>
+
+<head>
+
+<meta charset="utf-8">
+
+<title>Details Manager</title>
+
+</head>
+
+ 
+
+<body>
+
+<h1>Details Manager<h1><br><br>
+
+<form method ="post" action="detailsmanager.php">
+
+<input type="number" name="Id" placeholder="Id" value="<?php echo($Id);?>"><br><br>
+
+<input type="text" name="Detail" placeholder="Enter your details here" value="<?php echo($Detail);?>"><br><br>
+
+
+<div>
+
+<input type="submit" name="insert" value="Add">
+
+<input type="submit" name="delete" value="Delete">
+
+<input type="submit" name="update" value="Update">
+
+<input type="submit" name="search" value="Find">
+
+ 
+
+</div>
+
+</form>
+
+</body>
+
+</html>
